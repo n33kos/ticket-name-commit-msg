@@ -1,0 +1,11 @@
+commit_regex='((tik|TIK)-[0-9]+)'
+separator=': '
+
+if ! grep -iqE "$commit_regex" "$1"; then
+    ticket_number=$(git rev-parse --abbrev-ref HEAD | grep -Eo "$commit_regex")
+    ticket_number_clean=$(echo "$ticket_number" | tr '[a-z]' '[A-Z]')
+    if [ ! -z "$ticket_number_clean" ]; then
+        sed -i.bak "1s/^/$ticket_number_clean$separator/" $1
+        echo "🚧  Prepending $ticket_number_clean to commit message. 🚧"
+    fi
+fi
